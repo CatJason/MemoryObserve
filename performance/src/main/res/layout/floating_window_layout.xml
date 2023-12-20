@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:background="#ff99cc00"
+    android:padding="8dp">
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/memory"
+        android:layout_marginEnd="8dp"/>
+
+    <TextView
+        android:id="@+id/tvBatteryLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:textSize="16dp"
+        android:text="内存检测"
+        android:textColor="#ffffff" />
+</LinearLayout>
