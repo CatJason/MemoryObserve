@@ -142,30 +142,6 @@ class MemoryService : Service() {
 
     private fun initOOMMonitorManager() {
         initializeCommonConfig()
-        val config = OOMMonitorConfig.Builder()
-            .setThreadThreshold(50) //50 only for test! Please use default value!
-            .setFdThreshold(300) // 300 only for test! Please use default value!
-            .setHeapThreshold(0.9f) // 0.9f for test! Please use default value!
-            .setVssSizeThreshold(1_000_000) // 1_000_000 for test! Please use default value!
-            .setMaxOverThresholdCount(1) // 1 for test! Please use default value!
-            .setAnalysisMaxTimesPerVersion(3) // Consider use default value！
-            .setAnalysisPeriodPerVersion(15 * 24 * 60 * 60 * 1000) // Consider use default value！
-            .setLoopInterval(5_000) // 5_000 for test! Please use default value!
-            .setEnableHprofDumpAnalysis(true)
-            .setHprofUploader(object : OOMHprofUploader {
-                override fun upload(file: File, type: OOMHprofUploader.HprofType) {
-                    MonitorLog.e("OOMMonitor", "todo, upload hprof ${file.name} if necessary")
-                }
-            })
-            .setReportUploader(object : OOMReportUploader {
-                override fun upload(file: File, content: String) {
-                    MonitorLog.i("OOMMonitor", content)
-                    MonitorLog.e("OOMMonitor", "todo, upload report ${file.name} if necessary")
-                }
-            })
-            .build()
-
-        MonitorManager.addMonitorConfig(config)
     }
 
     private fun initializeCommonConfig() {
@@ -188,27 +164,6 @@ class MemoryService : Service() {
             .setLoadSoInvoker { soName ->
                 System.loadLibrary(soName)
             }
-            .setLogger(object : Logger {
-                override fun addCustomStatEvent(key: String, value: String?, realtimeReport: Boolean) {
-
-                }
-
-                override fun addExceptionEvent(message: String, @Logger.ExceptionType crashType: Int) {
-
-                }
-
-            })
-            .setLog(object : Log {
-                override fun v(tag: String, msg: String) = run { android.util.Log.v(tag, msg) }
-
-                override fun i(tag: String, msg: String) = run { android.util.Log.i(tag, msg) }
-
-                override fun d(tag: String, msg: String) = run { android.util.Log.d(tag, msg) }
-
-                override fun w(tag: String, msg: String) = run { android.util.Log.w(tag, msg) }
-
-                override fun e(tag: String, msg: String) = run { android.util.Log.e(tag, msg) }
-            })
             .setExecutorServiceInvoker {
                 Executors.newSingleThreadExecutor()
             }
