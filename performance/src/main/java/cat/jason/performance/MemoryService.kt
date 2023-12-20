@@ -14,9 +14,17 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnLongClickListener
 import android.view.WindowManager
 import android.widget.TextView
+import android.widget.Toast
+import com.kwai.koom.javaoom.hprof.ForkStripHeapDumper
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.roundToInt
+
 
 class MemoryService : Service() {
     companion object {
@@ -90,6 +98,24 @@ class MemoryService : Service() {
             }
         })
 
+        floatingView?.setOnLongClickListener {
+            // 显示长时间的Toast消息
+            Toast.makeText(applicationContext, "开始内存转储...", Toast.LENGTH_LONG).show()
+            val internalStorageDir: File = this.filesDir
+
+            val dumpDir = File(internalStorageDir, "dumps")
+            if (!dumpDir.exists()) {
+                dumpDir.mkdirs() // 如果目录不存在，则创建目录
+            }
+
+            val timestamp: String =
+                SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val dumpFileName = "dump_$timestamp.hprof"
+            val dumpFile = File(dumpDir, dumpFileName)
+
+            ForkStripHeapDumper.getInstance().dump(dumpFile.absolutePath)
+            true // 返回true表示消费了长按事件
+        }
 
         val handler = Handler()
         val runnable: Runnable = object : Runnable {

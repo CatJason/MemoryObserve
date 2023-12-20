@@ -62,5 +62,5 @@ android {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
-    // implementation("com.kuaishou.koom:koom-java-leak-static:2.2.1")
+    implementation("com.kuaishou.koom:koom-java-leak-static:2.2.1")
 }
