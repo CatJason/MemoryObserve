@@ -2,6 +2,8 @@ package cat.jason.performance
 
 import android.annotation.SuppressLint
 import android.app.Service
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -19,14 +21,8 @@ import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import com.kwai.koom.base.CommonConfig
-import com.kwai.koom.base.Log
-import com.kwai.koom.base.Logger
-import com.kwai.koom.base.MonitorLog
 import com.kwai.koom.base.MonitorManager
 import com.kwai.koom.javaoom.hprof.ForkStripHeapDumper
-import com.kwai.koom.javaoom.monitor.OOMHprofUploader
-import com.kwai.koom.javaoom.monitor.OOMMonitorConfig
-import com.kwai.koom.javaoom.monitor.OOMReportUploader
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -47,9 +43,7 @@ class MemoryService : Service() {
     private var flag = true
     private var time = 1000L
     private var totalMemory = 0f
-    private var initialX: Int = 0
     private var initialY: Int = 0
-    private var initialTouchX: Float = 0f
     private var initialTouchY: Float = 0f
     private var currentColor = 0
 
@@ -62,7 +56,7 @@ class MemoryService : Service() {
         super.onCreate()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-        initOOMMonitorManager()
+        initializeCommonConfig()
 
         // 设置悬浮窗布局参数
         val params = WindowManager.LayoutParams(
@@ -88,17 +82,13 @@ class MemoryService : Service() {
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
                         // 记录初始位置和触摸点的位置
-                        initialX = params.x
                         initialY = params.y
-                        initialTouchX = event.rawX
                         initialTouchY = event.rawY
                     }
 
                     MotionEvent.ACTION_MOVE -> {
                         // 计算悬浮窗的新位置
-                        val deltaX = event.rawX - initialTouchX
                         val deltaY = event.rawY - initialTouchY
-                        params.x = (initialX + deltaX).toInt()
                         params.y = (initialY + deltaY).toInt()
 
                         // 更新悬浮窗的位置
@@ -109,9 +99,8 @@ class MemoryService : Service() {
             }
         })
 
-        floatingView?.findViewById<TextView>(R.id.tvBatteryLevel)?.setOnLongClickListener {
-            // 显示长时间的Toast消息
-            Toast.makeText(applicationContext, "开始内存转储...", Toast.LENGTH_LONG).show()
+        val textView = floatingView?.findViewById<TextView>(R.id.tvBatteryLevel)
+        textView?.setOnLongClickListener {
             val internalStorageDir: File = this.filesDir
 
             val dumpDir = File(internalStorageDir, "dumps")
@@ -124,8 +113,18 @@ class MemoryService : Service() {
             val dumpFileName = "dump_$timestamp.hprof"
             val dumpFile = File(dumpDir, dumpFileName)
 
-            ForkStripHeapDumper.getInstance().dump(dumpFile.absolutePath)
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val dumpFilePath = dumpFile.absolutePath
+
+            val clipData = ClipData.newPlainText("DumpFilePath", dumpFilePath)
+            clipboard.setPrimaryClip(clipData)
+            ForkStripHeapDumper.getInstance().dump(dumpFilePath)
+            showCustomToast("开始内存转储...")
             true // 返回true表示消费了长按事件
+        }
+
+        textView?.setOnClickListener {
+            showCustomToast("图标拖拽，文字长按堆转储")
         }
 
         val handler = Handler()
@@ -140,8 +139,20 @@ class MemoryService : Service() {
         handler.post(runnable)
     }
 
-    private fun initOOMMonitorManager() {
-        initializeCommonConfig()
+    private fun showCustomToast(message: String?) {
+        val inflater = application.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val customToastView: View = inflater.inflate(R.layout.custom_toast, null)
+        val textView = customToastView.findViewById<TextView>(R.id.custom_toast_message)
+        textView.text = message
+
+        val customToast = Toast(applicationContext)
+        customToast.setView(customToastView)
+        customToast.duration = Toast.LENGTH_LONG // 设置默认的显示时长，以避免不受控制的长时间显示
+
+        // 设置Toast的位置为中间
+        customToast.setGravity(Gravity.CENTER, 0, 0)
+
+        customToast.show()
     }
 
     private fun initializeCommonConfig() {
