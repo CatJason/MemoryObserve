@@ -24,8 +24,10 @@ object MemoryWarningSign {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) // You need this flag when starting an activity from a non-Activity context
                 context.startActivity(intent)
             }
+            showPermissionToast(context)
         } else {
             context.startService(Intent(context, MemoryService::class.java))
+            showGuideToast(context)
         }
     }
 

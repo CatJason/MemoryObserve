@@ -120,12 +120,12 @@ class MemoryService : Service() {
             val clipData = ClipData.newPlainText("DumpFilePath", dumpFilePath)
             clipboard.setPrimaryClip(clipData)
             ForkStripHeapDumper.getInstance().dump(dumpFilePath)
-            showCustomToast("开始堆转储...\n路径已经复制到粘贴板")
+            showCustomToast(this,"开始堆转储...\n路径已经复制到粘贴板")
             true // 返回true表示消费了长按事件
         }
 
         textView?.setOnClickListener {
-            showCustomToast("图标拖拽，文字长按堆转储")
+            showGuideToast()
         }
 
         val handler = Handler()
@@ -138,22 +138,6 @@ class MemoryService : Service() {
 
         // 启动定时任务
         handler.post(runnable)
-    }
-
-    private fun showCustomToast(message: String?) {
-        val inflater = application.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val customToastView: View = inflater.inflate(R.layout.custom_toast, null)
-        val textView = customToastView.findViewById<TextView>(R.id.custom_toast_message)
-        textView.text = message
-
-        val customToast = Toast(applicationContext)
-        customToast.setView(customToastView)
-        customToast.duration = Toast.LENGTH_LONG // 设置默认的显示时长，以避免不受控制的长时间显示
-
-        // 设置Toast的位置为中间
-        customToast.setGravity(Gravity.CENTER, 0, 0)
-
-        customToast.show()
     }
 
     private fun initializeCommonConfig() {
