@@ -1,7 +1,6 @@
 package cat.jason.performance
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
