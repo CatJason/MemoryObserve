@@ -16,4 +16,3 @@ dependencyResolutionManagement {
 rootProject.name = "Memory"
 include(":app")
 include(":performance")
-include(":performance-no-op")

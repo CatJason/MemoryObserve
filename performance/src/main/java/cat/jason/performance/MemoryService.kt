@@ -32,7 +32,7 @@ import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 
 
-class MemoryService : Service() {
+internal class MemoryService : Service() {
     companion object {
         const val GREEN = 0
         const val BLUE = 1

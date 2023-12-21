@@ -13,7 +13,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/performance" />
-            <option value="$PROJECT_DIR$/performance-no-op" />
           </set>
         </option>
       </GradleProjectSettings>
