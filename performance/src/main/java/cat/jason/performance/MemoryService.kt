@@ -125,7 +125,7 @@ class MemoryService : Service() {
         }
 
         textView?.setOnClickListener {
-            showGuideToast()
+            showGuideToast(this)
         }
 
         val handler = Handler()
