@@ -20,7 +20,6 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import com.kwai.android.base.BuildConfig
 import com.kwai.koom.base.CommonConfig
 import com.kwai.koom.base.MonitorManager
@@ -193,9 +192,19 @@ class MemoryService : Service() {
         totalMemory = maxMemory
     }
 
+    private fun getJavaUsedMemory(): Float {
+        val runtime = Runtime.getRuntime()
+        val totalMemory = runtime.totalMemory()
+        val freeMemory = runtime.freeMemory()
+        val usedMemory = totalMemory - freeMemory
+
+        return if (usedMemory >= 0) usedMemory / 1024.0f else 0f
+    }
+
     private fun updateFloatingWindow() {
         val view = floatingView?.findViewById<TextView>(R.id.tvBatteryLevel) ?: return
-        val currentMemory = getMemoryData().roundToInt()
+        val currentMemory = getJavaUsedMemory().roundToInt()
+        initMaxJavaMemory()
         view.text = "$currentMemory / $totalMemory MB"
 
         // Update background color based on memory usage
