@@ -198,13 +198,16 @@ class MemoryService : Service() {
         val freeMemory = runtime.freeMemory()
         val usedMemory = totalMemory - freeMemory
 
-        return if (usedMemory >= 0) usedMemory / 1024.0f else 0f
+        return if (usedMemory >= 0) {
+            usedMemory / 1024.0f / 1024.0f
+        } else {
+            0f
+        }
     }
 
     private fun updateFloatingWindow() {
         val view = floatingView?.findViewById<TextView>(R.id.tvBatteryLevel) ?: return
         val currentMemory = getJavaUsedMemory().roundToInt()
-        initMaxJavaMemory()
         view.text = "$currentMemory / $totalMemory MB"
 
         // Update background color based on memory usage
