@@ -20,6 +20,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import com.kwai.android.base.BuildConfig
 import com.kwai.koom.base.CommonConfig
 import com.kwai.koom.base.MonitorManager
 import com.kwai.koom.javaoom.hprof.ForkStripHeapDumper
@@ -119,7 +121,7 @@ class MemoryService : Service() {
             val clipData = ClipData.newPlainText("DumpFilePath", dumpFilePath)
             clipboard.setPrimaryClip(clipData)
             ForkStripHeapDumper.getInstance().dump(dumpFilePath)
-            showCustomToast("开始内存转储...")
+            showCustomToast("开始堆转储...\n路径已经复制到粘贴板")
             true // 返回true表示消费了长按事件
         }
 
@@ -198,10 +200,10 @@ class MemoryService : Service() {
 
         // Update background color based on memory usage
         updateBackground(currentMemory)
-        breathing(view)
+        breathingAnim(view)
     }
 
-    private fun breathing(view: TextView) {
+    private fun breathingAnim(view: TextView) {
         if (flag) {
             // If flag is true, start heartbeat animation and set to visible
             view.alpha = 0.7f
