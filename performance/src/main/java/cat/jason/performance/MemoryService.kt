@@ -188,8 +188,12 @@ class MemoryService : Service() {
     }
 
     private fun initMaxJavaMemory() {
-        val maxMemory = Runtime.getRuntime().maxMemory() / 1024.0f / 1024.0f // 转换为 MB
-        totalMemory = maxMemory
+        val maxMemory = Runtime.getRuntime().maxMemory()  // 转换为 MB
+        totalMemory = if(maxMemory > 0) {
+            maxMemory / 1024.0f / 1024.0f
+        } else {
+            0f
+        }
     }
 
     private fun getJavaUsedMemory(): Float {
