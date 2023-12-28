@@ -24,6 +24,7 @@ import com.kwai.android.base.BuildConfig
 import com.kwai.koom.base.CommonConfig
 import com.kwai.koom.base.MonitorManager
 import com.kwai.koom.javaoom.hprof.ForkStripHeapDumper
+import com.kwai.koom.javaoom.monitor.OOMMonitor
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -57,7 +58,14 @@ internal class MemoryService : Service() {
         super.onCreate()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-        initializeCommonConfig()
+        KOOMManager.initializeCommonConfig(
+            application,
+            packageManager,
+            packageName
+        )
+
+        KOOMManager.initializeOOMMonitorConfig()
+        OOMMonitor.startLoop(true, false, 5_000L)
 
         // 设置悬浮窗布局参数
         val params = WindowManager.LayoutParams(
@@ -138,37 +146,6 @@ internal class MemoryService : Service() {
 
         // 启动定时任务
         handler.post(runnable)
-    }
-
-    private fun initializeCommonConfig() {
-        val commonConfig = CommonConfig.Builder()
-            .setApplication(application)
-            .setDebugMode(BuildConfig.DEBUG)
-            .setSdkVersionMatch(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            .setVersionNameInvoker {
-                packageManager.getPackageInfo(packageName, 0).versionName
-            }
-            .setRootFileInvoker { fileName ->
-                File(application.getExternalFilesDir(null), fileName)
-            }
-            .setSharedPreferencesInvoker { name ->
-                application.getSharedPreferences(name, Context.MODE_PRIVATE)
-            }
-            .setSharedPreferencesKeysInvoker { sharedPreferences ->
-                sharedPreferences.all.keys
-            }
-            .setLoadSoInvoker { soName ->
-                System.loadLibrary(soName)
-            }
-            .setExecutorServiceInvoker {
-                Executors.newSingleThreadExecutor()
-            }
-            .setLoopHandlerInvoker {
-                Handler(Looper.getMainLooper())
-            }
-            .build()
-
-            MonitorManager.initCommonConfig(commonConfig)
     }
 
     private fun initMaxJavaMemory() {

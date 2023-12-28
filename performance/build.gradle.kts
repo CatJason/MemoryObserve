@@ -41,7 +41,7 @@ android {
                     from(components["release"]) // 表示发布 release（jitpack 都不会使用到）
 
                     // You can then customize attributes of the publication as shown below.
-                    groupId = "com.catjason.performance" // 这个是依赖库的组 id
+                    groupId = "cat.jason.performance" // 这个是依赖库的组 id
                     artifactId = "performance" // 依赖库的名称（jitpack 都不会使用到）
                     version = versionName
                 }

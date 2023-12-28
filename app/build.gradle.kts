@@ -36,6 +36,8 @@ android {
 }
 
 dependencies {
+    debugImplementation(project(":performance"))
+    releaseImplementation(project(":performance-no-op"))
     implementation(project(":performance"))
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
